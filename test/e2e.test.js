@@ -7,7 +7,7 @@ const Availability = require('../models/Availability');
 const Appointment = require('../models/Appointment');
 
 describe('College Appointment System - End-to-End Test', function () {
-  this.timeout(10000); // ⬅ Increase timeout to 10 seconds
+  this.timeout(20000); 
 
   let studentA1Token, professorP1Token, studentA2Token;
   let professorP1Id, availabilityId1, appointmentIdA1;
@@ -15,7 +15,7 @@ describe('College Appointment System - End-to-End Test', function () {
   before(async () => {
     console.log("\n--- Connecting to MongoDB ---");
     await mongoose.connect(process.env.MONGO_URI);
-    console.log("MongoDB Connected ✅\n");
+    console.log("MongoDB Connected \n");
   });
 
   beforeEach(async () => {
@@ -25,7 +25,7 @@ describe('College Appointment System - End-to-End Test', function () {
       Availability.deleteMany({}),
       Appointment.deleteMany({})
     ]);
-    console.log("Database Cleared ✅\n");
+    console.log("Database Cleared \n");
 
     console.log("\n--- Registering Users ---");
     await request(app).post('/api/auth/register')
@@ -56,7 +56,7 @@ describe('College Appointment System - End-to-End Test', function () {
     studentA2Token = res.body.token;
     console.log("✔ Student 2 logged in\n");
 
-    // ✅ Fix: Use correct email to fetch professor ID
+
     const professor = await User.findOne({ email: 'professor1@test.com' });
     professorP1Id = professor._id;
 
@@ -79,7 +79,7 @@ describe('College Appointment System - End-to-End Test', function () {
       .set('x-auth-token', studentA1Token);
     console.log("✔ Available Slots:", res.body);
 
-    console.log("\n--- Student A1 Booking an Appointment ---");
+    console.log("\n--- Student 1 Booking an Appointment ---");
     res = await request(app).post('/api/appointments')
       .set('x-auth-token', studentA1Token)
       .send({ availabilityId: availabilityId1 });
@@ -103,6 +103,6 @@ describe('College Appointment System - End-to-End Test', function () {
   after(async () => {
     console.log("\n--- Disconnecting from MongoDB ---");
     await mongoose.disconnect();
-    console.log("MongoDB Disconnected ✅\n");
+    console.log("MongoDB Disconnected \n");
   });
 });

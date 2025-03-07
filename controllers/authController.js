@@ -3,38 +3,40 @@ const User = require('../models/User');
 const bcrypt = require('bcryptjs');
 
 const register = async (req, res) => {
-  const { email, password, role } = req.body;
   try {
-    let user = await User.findOne({ email });
-    if (user) return res.status(400).json({ msg: 'User already exists' });
+    const { email, password, role } = req.body;
 
-    user = new User({ email, password, role });
+    if (await User.findOne({ email })) {
+      return res.status(400).json({ msg: 'User already exists' });
+    }
+
     const salt = await bcrypt.genSalt(10);
-    user.password = await bcrypt.hash(password, salt);
-    await user.save();
+    const hashedPassword = await bcrypt.hash(password, salt);
 
-    const payload = { id: user.id, role: user.role };
-    const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '1h' });
+    const user = await User.create({ email, password: hashedPassword, role });
+
+    const token = jwt.sign({ id: user.id, role: user.role }, process.env.JWT_SECRET, { expiresIn: '1h' });
+
     res.json({ token });
   } catch (err) {
-    res.status(500).send('Server error');
+    res.status(500).json({ msg: 'Server error' });
   }
 };
 
 const login = async (req, res) => {
-  const { email, password } = req.body;
   try {
+    const { email, password } = req.body;
     const user = await User.findOne({ email });
-    if (!user) return res.status(400).json({ msg: 'Invalid credentials' });
 
-    const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) return res.status(400).json({ msg: 'Invalid credentials' });
+    if (!user || !(await bcrypt.compare(password, user.password))) {
+      return res.status(400).json({ msg: 'Invalid credentials' });
+    }
 
-    const payload = { id: user.id, role: user.role };
-    const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '1h' });
+    const token = jwt.sign({ id: user.id, role: user.role }, process.env.JWT_SECRET, { expiresIn: '1h' });
+
     res.json({ token });
   } catch (err) {
-    res.status(500).send('Server error');
+    res.status(500).json({ msg: 'Server error' });
   }
 };
 

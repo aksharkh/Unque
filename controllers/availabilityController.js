@@ -1,26 +1,28 @@
 const Availability = require('../models/Availability');
 
 const createAvailability = async (req, res) => {
-  const { startTime, endTime } = req.body;
   try {
-    const availability = new Availability({
+    const { startTime, endTime } = req.body;
+    const availability = await Availability.create({
       professor: req.user.id,
       startTime,
       endTime
     });
-    await availability.save();
     res.json(availability);
   } catch (err) {
-    res.status(500).send('Server error');
+    res.status(500).json({ msg: 'Server error' });
   }
 };
 
 const getAvailabilities = async (req, res) => {
   try {
-    const availabilities = await Availability.find({ professor: req.params.professorId, isAvailable: true });
+    const availabilities = await Availability.find({
+      professor: req.params.professorId,
+      isAvailable: true
+    });
     res.json(availabilities);
   } catch (err) {
-    res.status(500).send('Server error');
+    res.status(500).json({ msg: 'Server error' });
   }
 };
 

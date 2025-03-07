@@ -19,9 +19,9 @@ app.get('/api/test', (req, res) => {
     res.status(200).json({ message: 'Test API working' });
 });
 
-if (require.main === module) {  // Prevent server from running if imported in test
+if (require.main === module) {  
     const PORT = process.env.PORT || 5000;
     app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
 }
 
-module.exports = app; // Export the app for testing
+module.exports = app; 
