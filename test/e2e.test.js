@@ -74,7 +74,7 @@ describe('College Appointment System - End-to-End Test', function () {
   });
 
   it('should allow a student to book an appointment and then cancel it', async () => {
-    console.log("\n--- Student A1 Fetching Available Slots ---");
+    console.log("\n--- Student 1 Fetching Available Slots ---");
     let res = await request(app).get(`/api/availability/${professorP1Id}`)
       .set('x-auth-token', studentA1Token);
     console.log("✔ Available Slots:", res.body);
