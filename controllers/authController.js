@@ -13,13 +13,11 @@ const register = async (req, res) => {
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
 
-    const user = await User.create({ email, password: hashedPassword, role });
+    await User.create({ email, password: hashedPassword, role });
 
-    const token = jwt.sign({ id: user.id, role: user.role }, process.env.JWT_SECRET, { expiresIn: '1h' });
-
-    res.json({ token });
+    res.status(201).json({ msg: 'User registered successfully' });
   } catch (err) {
-    res.status(500).json({ msg: 'Server error' });
+    res.status(500).json({ msg: 'Registration Failed' });
   }
 };
 
@@ -36,7 +34,7 @@ const login = async (req, res) => {
 
     res.json({ token });
   } catch (err) {
-    res.status(500).json({ msg: 'Server error' });
+    res.status(500).json({ msg: 'Login Failed' });
   }
 };
 

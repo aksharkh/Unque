@@ -31,7 +31,7 @@ const createAppointment = async (req, res) => {
     res.status(201).json(appointment);
   } catch (err) {
     await session.abortTransaction();
-    res.status(500).json({ msg: 'Server error', error: err.message });
+    res.status(500).json({ msg: 'CreateAppointment Failed', error: err.message });
   } finally {
     session.endSession();
   }
@@ -54,17 +54,25 @@ const cancelAppointment = async (req, res) => {
 
     res.json({ msg: 'Appointment cancelled' });
   } catch (err) {
-    res.status(500).json({ msg: 'Server error', error: err.message });
+    res.status(500).json({ msg: 'CancelAppointment Failed', error: err.message });
   }
 };
 
 const getAppointments = async (req, res) => {
   try {
     const appointments = await Appointment.find({ student: req.user.id })
-      .populate('professor availability');
+    .populate({
+      path: 'professor',
+      select: '_id' 
+    })
+    .populate({
+      path: 'availability',
+      select: '_id startTime endTime'  
+    })
+    .select('_id student'); 
     res.json(appointments);
   } catch (err) {
-    res.status(500).json({ msg: 'Server error', error: err.message });
+    res.status(500).json({ msg: 'GetAppointment Failed', error: err.message });
   }
 };
 

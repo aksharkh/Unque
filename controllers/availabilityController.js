@@ -10,7 +10,7 @@ const createAvailability = async (req, res) => {
     });
     res.json(availability);
   } catch (err) {
-    res.status(500).json({ msg: 'Server error' });
+    res.status(500).json({ msg: 'CreateAvailability Failed' });
   }
 };
 
@@ -22,7 +22,7 @@ const getAvailabilities = async (req, res) => {
     });
     res.json(availabilities);
   } catch (err) {
-    res.status(500).json({ msg: 'Server error' });
+    res.status(500).json({ msg: 'GetAvailability Failed' });
   }
 };
 
